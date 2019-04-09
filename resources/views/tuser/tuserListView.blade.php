@@ -4,9 +4,6 @@
 
 @section('content')
 @foreach($streams as $stream)
-<a href='/tusers/{{$stream->user_id}}'><h1>{{$stream->user_name}}</h1> </a>
-
+  <a href='/tusers/{{$stream->user_id}}'><h1>{{$stream->user_name}}</h1> </a>
 @endforeach
-
-
 @endsection

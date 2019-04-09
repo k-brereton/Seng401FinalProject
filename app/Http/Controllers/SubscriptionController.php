@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\TwitchDriver;
 use Illuminate\Http\Request;
 use App\Subscription;
+use Illuminate\Routing\Route;
 
 class SubscriptionController extends Controller
 {
@@ -24,6 +25,19 @@ class SubscriptionController extends Controller
         return view('sub/subscriptions',['clips'=>$clips]);
     }
 
+    public function tuser_manage_subscriptions() {
+      # Aggregate subscriptions and pass them into the view HERE!
+      $subs = auth()->user()->subscriptions;
+      $tuser_infos = array();
+      foreach ($subs as $sub) {
+        $user_query = TwitchDriver::sendTwitchRequest('/users', ['id' => $sub['tuser_id']])->data;
+        array_push($tuser_infos, $user_query[0]);
+      }
+      $view_data = [ 'subscriptions' => $tuser_infos
+                   ];
+      return view('sub/subscription_manager', $view_data);
+    }
+
     public function compareResponses($response1, $response2){
         return strcmp($response2->created_at, $response1->created_at);
     }
@@ -37,7 +51,12 @@ class SubscriptionController extends Controller
     public function unsubscribe($tuser_id){
         $sub=Subscription::where('user_id', auth()->id())->where('tuser_id',$tuser_id)->first();
         $sub->delete();
-        return redirect("/tusers/$tuser_id");
+        $route_name = \Route::currentRouteName();
+        if ($route_name == 'tuser_manage_subscriptions_unsubscribe') {
+          return $this->tuser_manage_subscriptions();
+        } else {
+          return redirect("/tusers/$tuser_id");
+        }
     }
 }
 
