@@ -7,8 +7,6 @@ use App\Subscription;
 
 class SubscriptionController extends Controller
 {
-    
-    
     //the subscription function is kinda crappy right now. currently it takes the top 20 videos 
     //from each twitch user you are subscribed to, and displayes them in a list in cronological order
     //we should change this so that it gets the most recent videos from all of your subscriptions. 
@@ -25,14 +23,17 @@ class SubscriptionController extends Controller
         
         return view('sub/subscriptions',['clips'=>$clips]);
     }
+
     public function compareResponses($response1, $response2){
         return strcmp($response2->created_at, $response1->created_at);
     }
+
     public function subscribe($tuser_id){
         $sub=Subscription::createSubscription(auth()->id(),$tuser_id);
         $sub->save();
         return redirect("/tusers/$tuser_id");
     }
+
     public function unsubscribe($tuser_id){
         $sub=Subscription::where('user_id', auth()->id())->where('tuser_id',$tuser_id)->first();
         $sub->delete();
