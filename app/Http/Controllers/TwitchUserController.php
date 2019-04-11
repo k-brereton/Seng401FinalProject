@@ -13,6 +13,7 @@ class TwitchUserController extends Controller
         $streams=TwitchDriver::sendTwitchRequest('/streams',['game_id' => $game_id]);
         return view('tuser/tuserListView',['streams'=> $streams->data]);
     }
+
     //views a single twitch user. 
     public function viewTuser($tuser_id){
         $tuser=TwitchDriver::sendTwitchRequest('/users',['id' => $tuser_id]);
